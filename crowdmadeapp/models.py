@@ -28,7 +28,7 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.title)
+        return self.title
 
 
 class Address(models.Model):
@@ -52,7 +52,7 @@ class Address(models.Model):
     country_code = models.CharField(max_length=1024)
 
     def __str__(self):
-        return str(self.street1)
+        return self.street1
 
 
 class Order(models.Model):
@@ -82,20 +82,20 @@ class Order(models.Model):
     shipped_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
     @classmethod
     def order_count(cls):
-        last_30_days = date.today() - timedelta(days=30)
-        order_count = cls.objects.filter(shipped_at__gt=last_30_days).aggregate(
+        last_30_days_date = date.today() - timedelta(days=30)
+        order_count = cls.objects.filter(shipped_at__gt=last_30_days_date).aggregate(
             Count("id")
         )
         return order_count
 
     @classmethod
     def order_total(cls):
-        last_30_days = date.today() - timedelta(days=30)
-        order_total = cls.objects.filter(shipped_at__gt=last_30_days).aggregate(
+        last_30_days_date = date.today() - timedelta(days=30)
+        order_total = cls.objects.filter(shipped_at__gt=last_30_days_date).aggregate(
             Sum("total")
         )
         return order_total
@@ -122,9 +122,9 @@ class Item(models.Model):
 
     @classmethod
     def product_quantities(cls):
-        last_30_days = date.today() - timedelta(days=30)
+        last_30_days_date = date.today() - timedelta(days=30)
         product_quantities = (
-            cls.objects.filter(order__shipped_at__gt=last_30_days)
+            cls.objects.filter(order__shipped_at__gt=last_30_days_date)
             .values("product__title")
             .annotate(sum_q=Sum("quantity"))
         )
@@ -151,4 +151,4 @@ class Collection(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.title)
+        return self.title

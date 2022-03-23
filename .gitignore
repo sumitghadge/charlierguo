@@ -6,3 +6,6 @@ venv/
 
 #media folder
 media/
+
+# Django stuff:
+db.sqlite3

@@ -8,16 +8,17 @@ from crowdmadeapp.models import Product, Address, Order, Item, Collection
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["name", "email", "total", "get_quantity"]
 
-    @admin.display(ordering="item__quantity")
-    def get_quantity(self, obj):
-        quantity = obj.items.all().aggregate(Sum("quantity"))
-        return quantity["quantity__sum"]
 
     search_fields = ["name", "email", "address__street1"]
 
     list_filter = [
         "address__country_name",
     ]
+
+    @admin.display(ordering="item__quantity")
+    def get_quantity(self, obj):
+        quantity = obj.items.all().aggregate(Sum("quantity"))
+        return quantity["quantity__sum"]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:  # editing an existing object
