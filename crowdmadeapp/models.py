@@ -87,7 +87,7 @@ class Order(models.Model):
     @classmethod
     def order_count(cls):
         last_30_days = date.today() - timedelta(days=30)
-        order_count = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
+        order_count = cls.objects.filter(shipped_at__gt=last_30_days).aggregate(
             Count("id")
         )
         return order_count
@@ -95,20 +95,26 @@ class Order(models.Model):
     @classmethod
     def order_total(cls):
         last_30_days = date.today() - timedelta(days=30)
-        order_total = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
+        order_total = cls.objects.filter(shipped_at__gt=last_30_days).aggregate(
             Sum("total")
         )
         return order_total
 
     @classmethod
     def average_shipping_time(cls):
-        average_shipping_time = Order.objects.filter(
-            shipped_at__isnull=False
-        ).aggregate(avg_score=Avg(F("shipped_at") - F("created_at")))
+        average_shipping_time = cls.objects.filter(shipped_at__isnull=False).aggregate(
+            avg_score=Avg(F("shipped_at") - F("created_at"))
+        )
         return average_shipping_time
 
 
 class Item(models.Model):
+    """Item is model which has a reference of oder and product
+    Attributes:
+        quantity : Quantity of an item
+        total : Total cost of an item
+    """
+
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, related_name="items", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
@@ -118,18 +124,24 @@ class Item(models.Model):
     def product_quantities(cls):
         last_30_days = date.today() - timedelta(days=30)
         product_quantities = (
-            Item.objects.filter(order__shipped_at__gt=last_30_days)
+            cls.objects.filter(order__shipped_at__gt=last_30_days)
             .values("product__title")
             .annotate(sum_q=Sum("quantity"))
         )
         return list(product_quantities)
 
 
-class Collections(models.Model):
+class Collection(models.Model):
+    """Collection is model which has a reference to product
+    Attributes:
+        title : Title is choice field of New/On_Sale/Fall_Collection
+        description : Description cost of collection
+    """
+
     class Status(models.TextChoices):
         NEW = "new", "New"
         ON_SALE = "on sale", "On sale"
-        Fall_Collection = "fall collection", "Fall Collection"
+        FALL_COLLECTION = "fall collection", "Fall Collection"
 
     title = models.CharField(max_length=1024, choices=Status.choices)
     description = models.TextField()

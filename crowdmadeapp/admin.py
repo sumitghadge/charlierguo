@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db.models import Sum
-from crowdmadeapp.models import Product, Address, Order, Item, Collections
+from crowdmadeapp.models import Product, Address, Order, Item, Collection
 
 # Register your models here.
 
@@ -25,7 +25,7 @@ class OrderAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
-class CollectionsAdmin(admin.ModelAdmin):
+class CollectionAdmin(admin.ModelAdmin):
     list_display = ["title", "created_at", "products", "get_price"]
 
     @admin.display(ordering="products__price", description="Price")
@@ -37,4 +37,4 @@ admin.site.register(Product)
 admin.site.register(Address)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Item)
-admin.site.register(Collections, CollectionsAdmin)
+admin.site.register(Collection, CollectionAdmin)
