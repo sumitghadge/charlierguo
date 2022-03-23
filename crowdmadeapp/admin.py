@@ -9,6 +9,8 @@ class OrderAdmin(admin.ModelAdmin):
 
     search_fields=['name','email','address__street1']
 
+    list_filter =['address__country_name',]
+
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing an existing object
             return self.readonly_fields + ('address',)

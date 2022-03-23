@@ -6,3 +6,8 @@ class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['title','description','status','price']
+    
+    def __init__(self, *args, **kwargs):
+        super(CreateProductForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs = {'class': 'form-control'}
