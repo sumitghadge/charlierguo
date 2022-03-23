@@ -9,7 +9,7 @@ from django.views.generic.edit import FormView
 class ProductCreateView(FormView):
     form_class = CreateProductForm
     template_name = "crowdmadeapp/product_form.html"
-    success_url ="/add_product/"
+    success_url ="/products/create/"
 
     def form_valid(self, form):
         form.save()
