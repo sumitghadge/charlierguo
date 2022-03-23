@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from crowdmadeapp.forms import CreateProductForm
 from crowdmadeapp.models import Order,Item
 from datetime import date, timedelta
-from django.db.models import Sum,Count
+from django.db.models import Sum,Count,Avg,F
 from django.views.generic.edit import FormView
+from django.db import models
 
 # Create your views here.
 class ProductCreateView(FormView):
@@ -29,3 +30,7 @@ def product_quantities(request):
     last_30_days = date.today() - timedelta(days=30)
     product_quantities = Item.objects.filter(order__shipped_at__gt = last_30_days).values('product__title').annotate(sum_q=Sum('quantity'))
     return JsonResponse({'data': list(product_quantities)})
+
+def average_shipping_time(request):
+    average_shipping_time = Order.objects.filter(shipped_at__isnull=False).aggregate(avg_score=Avg(F('shipped_at') - F('created_at')))
+    return JsonResponse({'data': (average_shipping_time)})
