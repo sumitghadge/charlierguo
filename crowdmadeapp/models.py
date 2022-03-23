@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+
 from django.db import models
 from django.db.models import Sum, Count, Avg, F
 
@@ -145,9 +146,7 @@ class Collection(models.Model):
 
     title = models.CharField(max_length=1024, choices=Status.choices)
     description = models.TextField()
-    products = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="products"
-    )
+    products = models.ManyToManyField(Product)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import Sum
+
 from crowdmadeapp.models import Product, Address, Order, Item, Collection
 
 # Register your models here.
@@ -7,7 +8,6 @@ from crowdmadeapp.models import Product, Address, Order, Item, Collection
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["name", "email", "total", "get_quantity"]
-
 
     search_fields = ["name", "email", "address__street1"]
 
@@ -27,11 +27,17 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ["title", "created_at", "products", "get_price"]
+    list_display = ["title", "created_at", "get_title", "get_price"]
+
+    @admin.display(ordering="products__title", description="Product Title")
+    def get_title(self, obj):
+        data = [a.title for a in obj.products.all()]
+        return data
 
     @admin.display(ordering="products__price", description="Price")
     def get_price(self, obj):
-        return obj.products.price
+        price = obj.products.all().aggregate(Sum("price"))["price__sum"]
+        return price
 
 
 admin.site.register(Product)
