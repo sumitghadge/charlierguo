@@ -4,7 +4,19 @@ from django.db.models import Sum, Count, Avg, F
 
 
 class Product(models.Model):
+    """Product is model which represents product
+    Attributes:
+        title: Title of the product
+        description : Description of the product
+        status : Status of product DRAFT/ACTIVE
+        price : Price of the product
+        vendor : Vendor of the product
+        image : Image of the product
+    """
+
     class Status(models.TextChoices):
+        """Choices of status"""
+
         DRAFT = "draft", "Draft"
         ACTIVE = "active", "Active"
 
@@ -20,6 +32,17 @@ class Product(models.Model):
 
 
 class Address(models.Model):
+    """Address is model which represents address
+    Attributes:
+        street1: street1 for the order
+        street2 : street2 for the order
+        city : city for the order
+        state : State for the order
+        zipcode : Zipcode for the order
+        country_name : Country_name for the order
+        country_code : country_code for the order
+    """
+
     street1 = models.CharField(max_length=1024)
     street2 = models.CharField(max_length=1024)
     city = models.CharField(max_length=1024)
@@ -33,6 +56,19 @@ class Address(models.Model):
 
 
 class Order(models.Model):
+    """Order is model which represents order and have a reference of Address
+    Attributes:
+        name: Name for the order
+        email : Email for the order
+        address : Address for order DRAFT/ACTIVE
+        subtotal : Subtotal for the order
+        taxes : Taxes for the order
+        shipping : shipping charges for the order
+        total : total charges for the order
+        created_at : Order created date
+        shipped_at : Order shipping date
+    """
+
     name = models.CharField(max_length=1024)
     email = models.CharField(max_length=1024)
     address = models.ForeignKey(
@@ -48,24 +84,24 @@ class Order(models.Model):
     def __str__(self):
         return str(self.name)
 
-    @property
-    def order_count(self):
+    @classmethod
+    def order_count(cls):
         last_30_days = date.today() - timedelta(days=30)
         order_count = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
             Count("id")
         )
         return order_count
 
-    @property
-    def order_total(self):
+    @classmethod
+    def order_total(cls):
         last_30_days = date.today() - timedelta(days=30)
         order_total = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
             Sum("total")
         )
         return order_total
 
-    @property
-    def average_shipping_time(self):
+    @classmethod
+    def average_shipping_time(cls):
         average_shipping_time = Order.objects.filter(
             shipped_at__isnull=False
         ).aggregate(avg_score=Avg(F("shipped_at") - F("created_at")))
@@ -78,8 +114,8 @@ class Item(models.Model):
     quantity = models.PositiveIntegerField()
     total = models.FloatField()
 
-    @property
-    def product_quantities(self):
+    @classmethod
+    def product_quantities(cls):
         last_30_days = date.today() - timedelta(days=30)
         product_quantities = (
             Item.objects.filter(order__shipped_at__gt=last_30_days)
