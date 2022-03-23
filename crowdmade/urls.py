@@ -22,16 +22,4 @@ from crowdmadeapp.views import ProductCreateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/create/',ProductCreateView.as_view(),name="product_create"),
-    path('data/',views.order_count,name='order_count'),
 ]
-
-# ********************************************
-
-# from django.contrib import admin
-# from django.urls import path
-# from .views import ProductCreateView
-
-# urlpatterns = [
-#     path("admin/", admin.site.urls),
-#     path("products/create/", ProductCreateView.as_view(), name="product_create")
-# ]
