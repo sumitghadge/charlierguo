@@ -1,6 +1,6 @@
-from django.db import models
 from datetime import date, timedelta
-from django.db.models import Sum,Count,Avg,F
+from django.db import models
+from django.db.models import Sum, Count, Avg, F
 
 
 class Product(models.Model):
@@ -35,7 +35,9 @@ class Address(models.Model):
 class Order(models.Model):
     name = models.CharField(max_length=1024)
     email = models.CharField(max_length=1024)
-    address = models.ForeignKey(Address, related_name="orders", on_delete=models.CASCADE)
+    address = models.ForeignKey(
+        Address, related_name="orders", on_delete=models.CASCADE
+    )
     subtotal = models.FloatField()
     taxes = models.FloatField()
     shipping = models.FloatField()
@@ -49,31 +51,41 @@ class Order(models.Model):
     @property
     def order_count(self):
         last_30_days = date.today() - timedelta(days=30)
-        order_count = Order.objects.filter(shipped_at__gt = last_30_days).aggregate(Count('id'))
+        order_count = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
+            Count("id")
+        )
         return order_count
 
     @property
     def order_total(self):
         last_30_days = date.today() - timedelta(days=30)
-        order_total = Order.objects.filter(shipped_at__gt = last_30_days).aggregate(Sum('total'))
+        order_total = Order.objects.filter(shipped_at__gt=last_30_days).aggregate(
+            Sum("total")
+        )
         return order_total
 
     @property
-    def average_shipping_time(request):
-        average_shipping_time = Order.objects.filter(shipped_at__isnull=False).aggregate(avg_score=Avg(F('shipped_at') - F('created_at')))
+    def average_shipping_time(self):
+        average_shipping_time = Order.objects.filter(
+            shipped_at__isnull=False
+        ).aggregate(avg_score=Avg(F("shipped_at") - F("created_at")))
         return average_shipping_time
-    
+
 
 class Item(models.Model):
-    order = models.ForeignKey(Order, related_name="items",on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name="items",on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name="items", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     total = models.FloatField()
 
     @property
-    def product_quantities(request):
+    def product_quantities(self):
         last_30_days = date.today() - timedelta(days=30)
-        product_quantities = Item.objects.filter(order__shipped_at__gt = last_30_days).values('product__title').annotate(sum_q=Sum('quantity'))
+        product_quantities = (
+            Item.objects.filter(order__shipped_at__gt=last_30_days)
+            .values("product__title")
+            .annotate(sum_q=Sum("quantity"))
+        )
         return list(product_quantities)
 
 
@@ -85,7 +97,9 @@ class Collections(models.Model):
 
     title = models.CharField(max_length=1024, choices=Status.choices)
     description = models.TextField()
-    products = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="products")
+    products = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="products"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
