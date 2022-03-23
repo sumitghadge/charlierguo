@@ -8,6 +8,7 @@ Steps to install crowdmade repository
 * Create virtual environment and activate it
 * Install packages from requirements.txt file `pip3 install -r requirements.txt`
 * run `python manage.py runserver` to start the server.
+* To create sqlite database run `python manage.py makemigrations` and then run `python manage.py migrate`
 * To create superuser run `python manage.py createsuperuser` and setup your username and password
 
 ## API Documentation
