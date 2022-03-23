@@ -5,7 +5,7 @@ from crowdmadeapp.models import Product
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['title','description','status','price']
+        fields = ['title','description','status','price','product_image']
     
     def __init__(self, *args, **kwargs):
         super(CreateProductForm, self).__init__(*args, **kwargs)

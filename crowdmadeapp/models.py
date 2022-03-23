@@ -10,6 +10,7 @@ class Product(models.Model):
     status = models.CharField(max_length=1024, choices=Status.choices)
     price = models.FloatField()
     vendor = models.CharField(max_length=1024)
+    product_image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return str(self.title)

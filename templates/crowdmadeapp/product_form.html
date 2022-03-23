@@ -13,13 +13,12 @@
     
     <div class="container-md" style="width: 50%; margin-top: 5%;">
         <h1>Product form</h1>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {{form.as_p}}
             {%csrf_token%}
             <button type="submit" class="btn btn-outline-dark">Add</button>
         </form>
     </div>
-    
     
 </body>
 </html>
